@@ -1,28 +1,13 @@
-import { Link } from 'react-router-dom'
-import logo from '../assets/metricks-white.png';
 import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
 import Question from '../components/Question';
 import WhyUS from '../components/WhyUS';
 
 const About = () => {
   return (
     <section className='about-us'>
-      <div className="about-container">
-        <nav>
-          <Link to='/'>
-          <div className="logo">
-            <img src={logo} alt="logo" />
-            <div>metricks</div>
-          </div>
-          </Link>
-          <ul className="right-nav">
-            <li style={{ color: '#FF00F7' }}>About</li>
-            <li>Blog</li>
-            <li>
-              <button>Contact Us</button>
-            </li>
-          </ul>
-        </nav>
+      <div className="about-container height-100vh">
+        <Navbar />
         <div className="gradient-circle"></div>
         <div className="glass-container glass"></div>
         <div className="blur"></div>
