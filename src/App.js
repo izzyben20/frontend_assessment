@@ -1,9 +1,10 @@
-import Github from './components/Github';
+// import Github from './components/Github';
+import About from './pages/About';
 
 function App() {
   return (
     <div className="App">
-     <Github />
+    <About />
     </div>
   );
 }

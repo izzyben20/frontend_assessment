@@ -1,24 +1,26 @@
 import { useState } from 'react';
 
-const useFetch = (url) => {
-  const [data, setData] = useState(null);
+const useFetch = (page) => {
+  const [state, setState] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const url =
+    `https://api.github.com/search/repositories?q=created:>2021-08-13&sort=stars&order=desc&page=${page}`;
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await fetch(url);
       const data = await response.json();
-      setData(data);
+      setState([...state, ...data.items]);
       setLoading(false);
     } catch (error) {
-      setError(error);
+      setError(error.message);
       setLoading(false);
     }
   };
 
-  return { data, loading, error, fetchData };
+  return { state, loading, error, fetchData };
 };
 
 export default useFetch;

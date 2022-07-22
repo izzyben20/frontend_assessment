@@ -1,31 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SpinnerCircularFixed } from 'spinners-react';
+import { v4 as uuidv4 } from 'uuid';
 import useFetch from '../hooks/useFetch';
 
 const Github = () => {
-  const url =
-    'https://api.github.com/search/repositories?q=created:>2021-08-13&sort=stars&order=desc';
-  const { data, loading, error, fetchData } = useFetch(url);
+  const [page, setPage] = useState(1);
+  const { state: data, loading, error, fetchData } = useFetch(page);
 
   useEffect(() => {
     fetchData();
-  }, [url]);
+    window.addEventListener('scroll', handleScroll);
+  }, [page]);
 
-  if (loading) {
-    return (
-      <section className="spinner">
-        <SpinnerCircularFixed color="#01bf71" />
-      </section>
-    );
-  }
-
-  if (data) {
-    console.log(data.items);
-  }
+  const handleScroll = () => {
+    let userScrollHeight = window.scrollY + window.innerHeight;
+    let windowBottomHeight = document.documentElement.offsetHeight;
+    if (userScrollHeight >= windowBottomHeight) {
+      setPage(page + 1);
+    }
+  };
 
   if (error) {
     return (
-      <section className="spinner">
+      <section className="error">
         <h4>{error}</h4>
       </section>
     );
@@ -38,35 +35,40 @@ const Github = () => {
   };
 
   return (
-    <section className="container">
-      {data &&
-        data.items.map((item) => (
-          <div className="user" key={item.id}>
-            <div className="img_container">
-              <img src={item.owner.avatar_url} alt="avatar" />
-            </div>
-            <div className="group">
-              <h2>{item.name}</h2>
-              <p>{item.description}</p>
-              <div className="flex-container">
-                <div className="border">
-                  Stars:{' '}
-                  {convertNumber(item.stargazers_count)}
+    <>
+      <section className="container">
+        {data &&
+          data.map((item) => (
+            <div className="user" key={uuidv4()}>
+              <div className="img_container">
+                <img src={item.owner.avatar_url} alt="avatar" />
+              </div>
+              <div className="group">
+                <h2>{item.name}</h2>
+                <p>{item.description}</p>
+                <div className="flex-container">
+                  <div className="border">
+                    Stars: {convertNumber(item.stargazers_count)}
+                  </div>
+                  <div className="border">
+                    Issues: {convertNumber(item.open_issues_count)}
+                  </div>
+                  <p>
+                    Submitted{' '}
+                    {new Date(item.created_at).toLocaleString('en-us', {
+                      day: 'numeric',
+                    })}{' '}
+                    days ago by {item.owner.login}
+                  </p>
                 </div>
-                <div className="border">Issues: {convertNumber(item.open_issues_count)}</div>
-                <p>
-                  Submitted{' '}
-                  {new Date(item.created_at).toLocaleString('en-us', {
-                    // month: 'short',
-                    day: '2-digit',
-                  })}{' '}
-                  days ago by {item.owner.login}
-                </p>
               </div>
             </div>
-          </div>
-        ))}
-    </section>
+          ))}
+      </section>
+      <div className={data.length ? 'spinner-two' : 'spinner-one'}>
+        {loading && <SpinnerCircularFixed color="#000000" />}
+      </div>
+    </>
   );
 };
 
